@@ -1,139 +1,13 @@
 //
-//  ContentView.swift
-//  Campus Menu
+//  ProfileView.swift
+//  CampusMenuIOS
 //
-//  Created by Çağan Şahbaz on 6.12.2025.
+//  Created on 2025-12-06.
 //
 
 import SwiftUI
 
-struct ContentView: View {
-    @ObservedObject var repository = DataRepository.shared
-    
-    @State private var isLoggedIn = false
-    @State private var selectedRole: UserRole? = nil
-    @State private var showRegister = false
-    
-    var body: some View {
-        Group {
-            if !isLoggedIn {
-                // Auth flow
-                if selectedRole == nil {
-                    RoleSelectionView(selectedRole: $selectedRole)
-                } else if selectedRole == .admin {
-                    AdminLoginView(isLoggedIn: $isLoggedIn, selectedRole: $selectedRole)
-                } else {
-                    if showRegister {
-                        StudentRegisterView(isPresented: $showRegister, isLoggedIn: $isLoggedIn)
-                    } else {
-                        StudentLoginView(isLoggedIn: $isLoggedIn, selectedRole: $selectedRole, showRegister: $showRegister)
-                    }
-                }
-            } else {
-                // Main app
-                if repository.currentUser?.role == .admin {
-                    AdminTabView(isLoggedIn: $isLoggedIn)
-                } else {
-                    StudentTabView(isLoggedIn: $isLoggedIn)
-                }
-            }
-        }
-        .onAppear {
-            // Check if already logged in
-            if repository.currentUser != nil {
-                isLoggedIn = true
-            }
-        }
-    }
-}
-
-// MARK: - Student Tab View
-
-struct StudentTabView: View {
-    @Binding var isLoggedIn: Bool
-    
-    @ObservedObject var themeManager = ThemeManager.shared
-    @ObservedObject var localization = LocalizationManager.shared
-    
-    var body: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Label(localization.localized("home"), systemImage: "house.fill")
-                }
-            
-            CalendarView()
-                .tabItem {
-                    Label(localization.localized("calendar"), systemImage: "calendar")
-                }
-            
-            FavoritesView()
-                .tabItem {
-                    Label(localization.localized("favorites"), systemImage: "heart.fill")
-                }
-            
-            AnnouncementsView()
-                .tabItem {
-                    Label(localization.localized("announcements"), systemImage: "megaphone.fill")
-                }
-            
-            ProfileView(isLoggedIn: $isLoggedIn)
-                .tabItem {
-                    Label(localization.localized("profile"), systemImage: "person.fill")
-                }
-        }
-        .accentColor(themeManager.currentTheme.primary)
-    }
-}
-
-// MARK: - Admin Tab View
-
-struct AdminTabView: View {
-    @Binding var isLoggedIn: Bool
-    
-    @ObservedObject var repository = DataRepository.shared
-    @ObservedObject var themeManager = ThemeManager.shared
-    @ObservedObject var localization = LocalizationManager.shared
-    
-    var body: some View {
-        TabView {
-            HomeView()
-                .tabItem {
-                    Label(localization.localized("home"), systemImage: "house.fill")
-                }
-            
-            CalendarView()
-                .tabItem {
-                    Label(localization.localized("calendar"), systemImage: "calendar")
-                }
-            
-            AdminManagementView()
-                .tabItem {
-                    Label(localization.localized("management"), systemImage: "square.and.pencil")
-                }
-            
-            AdminReviewsView()
-                .tabItem {
-                    Label(localization.localized("reviews"), systemImage: "star.bubble")
-                }
-            
-            AnnouncementsView()
-                .tabItem {
-                    Label(localization.localized("announcements"), systemImage: "megaphone.fill")
-                }
-            
-            AdminProfileView(isLoggedIn: $isLoggedIn)
-                .tabItem {
-                    Label(localization.localized("profile"), systemImage: "person.fill")
-                }
-        }
-        .accentColor(themeManager.currentTheme.primary)
-    }
-}
-
-// MARK: - Admin Profile View
-
-struct AdminProfileView: View {
+struct ProfileView: View {
     @Binding var isLoggedIn: Bool
     
     @ObservedObject var repository = DataRepository.shared
@@ -162,18 +36,22 @@ struct AdminProfileView: View {
                                 )
                                 .frame(width: 100, height: 100)
                                 .overlay(
-                                    Image(systemName: "person.badge.key.fill")
-                                        .font(.system(size: 40))
+                                    Text(repository.currentStudent?.name.prefix(1).uppercased() ?? "S")
+                                        .font(.system(size: 40, weight: .bold))
                                         .foregroundColor(.white)
                                 )
                             
-                            Text(localization.localized("admin"))
+                            Text(repository.currentStudent?.name ?? "")
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(Color.adaptiveText(themeManager.isDarkMode))
                             
-                            Text(repository.currentUser?.email ?? "")
+                            Text(repository.currentStudent?.email ?? "")
                                 .font(.subheadline)
+                                .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
+                            
+                            Text(repository.currentStudent?.studentNumber ?? "")
+                                .font(.caption)
                                 .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
                         }
                         .padding(.top, 20)
@@ -203,19 +81,58 @@ struct AdminProfileView: View {
             .navigationTitle(localization.localized("my_profile"))
             .navigationBarTitleDisplayMode(.large)
             .sheet(isPresented: $showSettings) {
-                AdminSettingsView()
+                SettingsView()
             }
         }
     }
 }
 
-// MARK: - Admin Settings View
+struct ProfileMenuItem: View {
+    let icon: String
+    let title: String
+    var isDestructive: Bool = false
+    let action: () -> Void
+    
+    @ObservedObject var themeManager = ThemeManager.shared
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundColor(isDestructive ? .red : themeManager.currentTheme.primary)
+                    .frame(width: 30)
+                
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(isDestructive ? .red : Color.adaptiveText(themeManager.isDarkMode))
+                
+                Spacer()
+                
+                if !isDestructive {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
+                        .font(.caption)
+                }
+            }
+            .padding()
+            .background(Color.adaptiveCard(themeManager.isDarkMode))
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(themeManager.isDarkMode ? 0.3 : 0.1), radius: 4, x: 0, y: 2)
+        }
+    }
+}
 
-struct AdminSettingsView: View {
+// MARK: - Settings View
+
+struct SettingsView: View {
+    @ObservedObject var repository = DataRepository.shared
     @ObservedObject var themeManager = ThemeManager.shared
     @ObservedObject var localization = LocalizationManager.shared
     
     @Environment(\.dismiss) var dismiss
+    
+    @State private var selectedAllergens: Set<Allergen> = []
     
     var body: some View {
         NavigationView {
@@ -277,6 +194,52 @@ struct AdminSettingsView: View {
                             }
                         }
                     }
+                    
+                    // Notifications Section
+                    Section(header: Text(localization.localized("notifications"))) {
+                        Toggle(localization.localized("menu_updates"), isOn: Binding(
+                            get: { repository.preferences.notificationSettings.menuUpdates },
+                            set: { value in
+                                var prefs = repository.preferences
+                                prefs.notificationSettings.menuUpdates = value
+                                repository.updatePreferences(prefs)
+                            }
+                        ))
+                        
+                        Toggle(localization.localized("announcements_notify"), isOn: Binding(
+                            get: { repository.preferences.notificationSettings.announcements },
+                            set: { value in
+                                var prefs = repository.preferences
+                                prefs.notificationSettings.announcements = value
+                                repository.updatePreferences(prefs)
+                            }
+                        ))
+                    }
+                    
+                    // Allergies Section
+                    Section(header: Text(localization.localized("allergies"))) {
+                        ForEach(Allergen.allCases, id: \.self) { allergen in
+                            Button(action: {
+                                toggleAllergen(allergen)
+                            }) {
+                                HStack {
+                                    Text(allergen.icon)
+                                    Text(localization.localized(allergen.localizedKey))
+                                        .foregroundColor(Color.adaptiveText(themeManager.isDarkMode))
+                                    
+                                    Spacer()
+                                    
+                                    if selectedAllergens.contains(allergen) {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(themeManager.currentTheme.primary)
+                                    } else {
+                                        Image(systemName: "circle")
+                                            .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 .scrollContentBackground(.hidden)
             }
@@ -290,7 +253,23 @@ struct AdminSettingsView: View {
                     .foregroundColor(themeManager.currentTheme.primary)
                 }
             }
+            .onAppear {
+                if let student = repository.currentStudent {
+                    selectedAllergens = Set(student.allergens)
+                }
+            }
         }
     }
+    
+    private func toggleAllergen(_ allergen: Allergen) {
+        if selectedAllergens.contains(allergen) {
+            selectedAllergens.remove(allergen)
+        } else {
+            selectedAllergens.insert(allergen)
+        }
+        
+        guard var student = repository.currentStudent else { return }
+        student.allergens = Array(selectedAllergens)
+        repository.updateStudent(student)
+    }
 }
-
