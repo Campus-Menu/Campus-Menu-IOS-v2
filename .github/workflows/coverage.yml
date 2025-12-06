@@ -1,0 +1,49 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  coverage:
+    name: Code Coverage
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Run tests with coverage
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        xcodebuild test \
+          -project "Campus Menu.xcodeproj" \
+          -scheme "Campus Menu" \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          -enableCodeCoverage YES \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+      continue-on-error: true
+      
+    - name: Generate coverage report
+      run: |
+        xcrun xccov view --report --json \
+          ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult > coverage.json
+      continue-on-error: true
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.json
+        flags: ios
+        name: ios-coverage
+      continue-on-error: true

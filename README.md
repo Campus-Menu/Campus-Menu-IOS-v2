@@ -1,5 +1,11 @@
 # Campus Menu iOS
 
+[![iOS CI](https://github.com/Campus-Menu/Campus-Menu-IOS-v2/actions/workflows/ios-ci.yml/badge.svg)](https://github.com/Campus-Menu/Campus-Menu-IOS-v2/actions/workflows/ios-ci.yml)
+[![Test Coverage](https://github.com/Campus-Menu/Campus-Menu-IOS-v2/actions/workflows/coverage.yml/badge.svg)](https://github.com/Campus-Menu/Campus-Menu-IOS-v2/actions/workflows/coverage.yml)
+[![Swift Version](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
+[![Platform](https://img.shields.io/badge/Platform-iOS%2017.0+-blue.svg)](https://developer.apple.com/ios/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 SwiftUI ile geliştirilmiş, yerli JSON depolama kullanan kampüs yemekhane uygulaması.
 
 ## 🚀 Özellikler
