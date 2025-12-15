@@ -113,6 +113,11 @@ struct HomeView: View {
             .navigationTitle("Ankara Bilim Üniversitesi")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Text("\(repository.menuHistory.count) günlük menü")
+                        .font(.caption)
+                        .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         if let item = filteredMenuItems.first {

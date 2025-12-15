@@ -324,7 +324,11 @@ class DataRepository: ObservableObject {
         }
         
         if menuHistory.isEmpty {
+            print("📅 1 yıllık menü oluşturuluyor...")
             createYearlyMenus()
+            print("✅ \(menuHistory.count) günlük menü oluşturuldu!")
+        } else {
+            print("✅ Menü zaten mevcut: \(menuHistory.count) günlük menü")
         }
         
         if announcements.isEmpty {
