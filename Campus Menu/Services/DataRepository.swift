@@ -314,16 +314,17 @@ class DataRepository: ObservableObject {
         // Only create sample data if it doesn't exist
         if students.isEmpty {
             let demoStudent = Student(
-                name: "Demo Öğrenci",
+                name: "Campus Öğrenci",
                 email: "ogrenci@campus.com",
                 password: "123456",
                 studentNumber: "2024001"
             )
             addStudent(demoStudent)
+            currentStudent = demoStudent
         }
         
         if menuHistory.isEmpty {
-            createSampleMenus()
+            createYearlyMenus()
         }
         
         if announcements.isEmpty {
@@ -331,29 +332,101 @@ class DataRepository: ObservableObject {
         }
     }
     
-    private func createSampleMenus() {
+    private func createYearlyMenus() {
         let calendar = Calendar.current
+        let today = Date()
         
-        for daysAgo in (0..<7).reversed() {
-            guard let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) else { continue }
+        // Son 6 ay + Gelecek 6 ay = 1 yıl menü
+        for daysOffset in -180...180 {
+            guard let date = calendar.date(byAdding: .day, value: daysOffset, to: today) else { continue }
             
-            let items = createSampleMenuItems()
-            let menuDay = MenuDay(date: date, items: items)
+            // Hafta sonları atla
+            let weekday = calendar.component(.weekday, from: date)
+            if weekday == 1 || weekday == 7 { // Pazar = 1, Cumartesi = 7
+                continue
+            }
+            
+            let items = createDailyMenuItems(for: date)
+            let menuDay = MenuDay(date: calendar.startOfDay(for: date), items: items)
             addMenuDay(menuDay)
         }
     }
     
-    private func createSampleMenuItems() -> [MenuItem] {
-        return [
-            MenuItem(name: "Mercimek Çorbası", description: "Geleneksel kırmızı mercimek çorbası", category: .soup, calories: 120, allergens: [.gluten]),
-            MenuItem(name: "Tavuk Şinitzel", description: "Gevrek kaplamalı tavuk göğsü", category: .lunch, calories: 350, allergens: [.gluten, .eggs]),
-            MenuItem(name: "Pilav", description: "Tereyağlı pirinç pilavı", category: .lunch, calories: 200),
-            MenuItem(name: "Izgara Köfte", description: "Baharatlı köfte", category: .dinner, calories: 320),
-            MenuItem(name: "Sütlaç", description: "Fırın sütlaç", category: .dessert, calories: 220, allergens: [.dairy]),
-            MenuItem(name: "Omlet", description: "Kaşarlı omlet", category: .breakfast, calories: 180, allergens: [.eggs, .dairy]),
-            MenuItem(name: "Makarna", description: "Domates soslu makarna", category: .lunch, calories: 250, allergens: [.gluten]),
-            MenuItem(name: "Meyve", description: "Mevsim meyveleri", category: .snack, calories: 80)
+    private func createDailyMenuItems(for date: Date) -> [MenuItem] {
+        let calendar = Calendar.current
+        let dayOfWeek = calendar.component(.weekday, from: date)
+        let weekNumber = calendar.component(.weekOfYear, from: date)
+        
+        // Haftanın gününe göre farklı menüler
+        var items: [MenuItem] = []
+        
+        // Her gün bir çorba
+        let soups = [
+            MenuItem(name: "Mercimek Çorbası", description: "Kırmızı mercimek çorbası", category: .soup, calories: 120, allergens: [.gluten]),
+            MenuItem(name: "Tavuk Çorbası", description: "Şehriyeli tavuk çorbası", category: .soup, calories: 140, allergens: [.gluten]),
+            MenuItem(name: "Domates Çorbası", description: "Kremalı domates çorbası", category: .soup, calories: 110, allergens: [.dairy]),
+            MenuItem(name: "Yayla Çorbası", description: "Yoğurtlu yayla çorbası", category: .soup, calories: 130, allergens: [.dairy]),
+            MenuItem(name: "Ezogelin Çorbası", description: "Baharatlı ezogelin çorbası", category: .soup, calories: 125)
         ]
+        items.append(soups[dayOfWeek % soups.count])
+        
+        // Ana yemek (haftanın gününe göre)
+        switch dayOfWeek {
+        case 2: // Pazartesi
+            items.append(MenuItem(name: "Tavuk Şinitzel", description: "Gevrek kaplamalı tavuk", category: .lunch, calories: 350, allergens: [.gluten, .eggs]))
+            items.append(MenuItem(name: "Pilav", description: "Tereyağlı pirinç pilavı", category: .lunch, calories: 200))
+        case 3: // Salı
+            items.append(MenuItem(name: "Izgara Köfte", description: "Baharatlı köfte", category: .lunch, calories: 320))
+            items.append(MenuItem(name: "Kumpir", description: "Fırın patates", category: .lunch, calories: 280, allergens: [.dairy]))
+        case 4: // Çarşamba
+            items.append(MenuItem(name: "Tavuk Sote", description: "Sebzeli tavuk sote", category: .lunch, calories: 310))
+            items.append(MenuItem(name: "Bulgur Pilavı", description: "Domatesli bulgur pilavı", category: .lunch, calories: 190))
+        case 5: // Perşembe
+            items.append(MenuItem(name: "Balık", description: "Fırında sebzeli balık", category: .lunch, calories: 290, allergens: [.fish]))
+            items.append(MenuItem(name: "Salata", description: "Mevsim salata", category: .lunch, calories: 80))
+        case 6: // Cuma
+            items.append(MenuItem(name: "Makarna", description: "Domates soslu makarna", category: .lunch, calories: 250, allergens: [.gluten]))
+            items.append(MenuItem(name: "Pizza Dilimi", description: "Margarita pizza", category: .lunch, calories: 280, allergens: [.gluten, .dairy]))
+        default:
+            items.append(MenuItem(name: "Tavuk Şinitzel", description: "Gevrek kaplamalı tavuk", category: .lunch, calories: 350, allergens: [.gluten, .eggs]))
+            items.append(MenuItem(name: "Pilav", description: "Tereyağlı pirinç pilavı", category: .lunch, calories: 200))
+        }
+        
+        // Akşam yemeği
+        let dinners = [
+            MenuItem(name: "Izgara Tavuk", description: "Marine edilmiş tavuk but", category: .dinner, calories: 300),
+            MenuItem(name: "Mantı", description: "Yoğurtlu mantı", category: .dinner, calories: 380, allergens: [.gluten, .dairy, .eggs]),
+            MenuItem(name: "Etli Nohut", description: "Haşlanmış nohut ve et", category: .dinner, calories: 340),
+            MenuItem(name: "Köri Soslu Tavuk", description: "Hindistan cevizli köri sos", category: .dinner, calories: 330),
+            MenuItem(name: "Sebze Güveç", description: "Fırında sebze güveç", category: .dinner, calories: 220)
+        ]
+        items.append(dinners[(dayOfWeek + weekNumber) % dinners.count])
+        
+        // Tatlı (Hafta içi her gün değişen)
+        let desserts = [
+            MenuItem(name: "Sütlaç", description: "Fırın sütlaç", category: .dessert, calories: 220, allergens: [.dairy]),
+            MenuItem(name: "Kazandibi", description: "Geleneksel kazandibi", category: .dessert, calories: 240, allergens: [.dairy]),
+            MenuItem(name: "Aşure", description: "Kuru meyveli aşure", category: .dessert, calories: 200, allergens: [.nuts]),
+            MenuItem(name: "Meyve", description: "Mevsim meyveleri", category: .dessert, calories: 80),
+            MenuItem(name: "Kek", description: "Çikolatalı kek", category: .dessert, calories: 260, allergens: [.gluten, .eggs, .dairy])
+        ]
+        items.append(desserts[(dayOfWeek + weekNumber) % desserts.count])
+        
+        // Kahvaltı
+        if dayOfWeek == 2 || dayOfWeek == 4 { // Pazartesi ve Çarşamba
+            items.append(MenuItem(name: "Omlet", description: "Kaşarlı omlet", category: .breakfast, calories: 180, allergens: [.eggs, .dairy]))
+            items.append(MenuItem(name: "Ekmek", description: "Taze ekmek", category: .breakfast, calories: 150, allergens: [.gluten]))
+        }
+        
+        // Atıştırmalık
+        let snacks = [
+            MenuItem(name: "Meyve", description: "Taze mevsim meyveleri", category: .snack, calories: 80),
+            MenuItem(name: "Yoğurt", description: "Süzme yoğurt", category: .snack, calories: 100, allergens: [.dairy]),
+            MenuItem(name: "Ceviz", description: "Kuru ceviz", category: .snack, calories: 120, allergens: [.nuts])
+        ]
+        items.append(snacks[weekNumber % snacks.count])
+        
+        return items
     }
     
     private func createSampleAnnouncements() {

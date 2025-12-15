@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @Binding var isLoggedIn: Bool
-    
     @ObservedObject var repository = DataRepository.shared
     @ObservedObject var themeManager = ThemeManager.shared
     @ObservedObject var localization = LocalizationManager.shared
@@ -41,37 +39,27 @@ struct ProfileView: View {
                                         .foregroundColor(.white)
                                 )
                             
-                            Text(repository.currentStudent?.name ?? "")
+                            Text(repository.currentStudent?.name ?? "Campus Öğrenci")
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(Color.adaptiveText(themeManager.isDarkMode))
                             
-                            Text(repository.currentStudent?.email ?? "")
+                            Text(repository.currentStudent?.email ?? "ogrenci@campus.com")
                                 .font(.subheadline)
                                 .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
                             
-                            Text(repository.currentStudent?.studentNumber ?? "")
+                            Text(repository.currentStudent?.studentNumber ?? "2024001")
                                 .font(.caption)
                                 .foregroundColor(Color.adaptiveTextSecondary(themeManager.isDarkMode))
                         }
                         .padding(.top, 20)
                         
-                        // Menu sections
+                        // Menu sections - Sadece Settings
                         VStack(spacing: 12) {
                             ProfileMenuItem(
                                 icon: "gearshape.fill",
                                 title: localization.localized("settings"),
                                 action: { showSettings = true }
-                            )
-                            
-                            ProfileMenuItem(
-                                icon: "arrow.right.square.fill",
-                                title: localization.localized("logout"),
-                                isDestructive: true,
-                                action: {
-                                    repository.logout()
-                                    isLoggedIn = false
-                                }
                             )
                         }
                         .padding(.horizontal)
