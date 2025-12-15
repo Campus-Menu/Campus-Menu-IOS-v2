@@ -63,7 +63,7 @@ struct FavoritesView: View {
                     }
                 }
             }
-            .navigationTitle(localization.localized("my_favorites"))
+            .navigationTitle("Favori Yemeklerim")
             .navigationBarTitleDisplayMode(.large)
         }
     }

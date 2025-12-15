@@ -43,7 +43,7 @@ struct AnnouncementsView: View {
                     }
                 }
             }
-            .navigationTitle(localization.localized("campus_announcements"))
+            .navigationTitle("Duyurular")
             .navigationBarTitleDisplayMode(.large)
         }
     }

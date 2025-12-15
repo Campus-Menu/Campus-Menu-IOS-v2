@@ -34,27 +34,27 @@ struct StudentTabView: View {
         TabView {
             HomeView()
                 .tabItem {
-                    Label(localization.localized("home"), systemImage: "house.fill")
+                    Label("Ana Sayfa", systemImage: "house.fill")
                 }
             
             CalendarView()
                 .tabItem {
-                    Label(localization.localized("calendar"), systemImage: "calendar")
+                    Label("Takvim", systemImage: "calendar")
                 }
             
             FavoritesView()
                 .tabItem {
-                    Label(localization.localized("favorites"), systemImage: "heart.fill")
+                    Label("Favoriler", systemImage: "heart.fill")
                 }
             
             AnnouncementsView()
                 .tabItem {
-                    Label(localization.localized("announcements"), systemImage: "megaphone.fill")
+                    Label("Duyurular", systemImage: "megaphone.fill")
                 }
             
             ProfileView()
                 .tabItem {
-                    Label(localization.localized("profile"), systemImage: "person.fill")
+                    Label("Profil", systemImage: "person.fill")
                 }
         }
         .accentColor(themeManager.currentTheme.primary)

@@ -431,18 +431,25 @@ class DataRepository: ObservableObject {
     
     private func createSampleAnnouncements() {
         let announcement1 = Announcement(
-            title: "Bakım Çalışması",
-            content: "Yemekhane bu hafta sonu bakım çalışmaları nedeniyle kapalı olacaktır.",
-            type: .maintenance
+            title: "Ankara Bilim Üniversitesi Yemekhane",
+            content: "Ankara Bilim Üniversitesi öğrencilerine günlük menü bilgisi ve kalori takibi sunan resmi uygulamadır.",
+            type: .general
         )
         
         let announcement2 = Announcement(
-            title: "Yeni Menü Dönemi",
-            content: "Önümüzdeki hafta yeni menü dönemi başlıyor. Lezzetli yemekler sizi bekliyor!",
-            type: .general
+            title: "Haftalık Menü Güncellendi",
+            content: "Bu hafta için yeni ve lezzetli yemekler menümüze eklendi. Favorilerinize eklemeyi unutmayın!",
+            type: .menuChange
+        )
+        
+        let announcement3 = Announcement(
+            title: "Sağlıklı Beslenme",
+            content: "Dengeli beslenme için her öğünde farklı besin gruplarından yiyecekler tüketmeyi unutmayın.",
+            type: .event
         )
         
         addAnnouncement(announcement1)
         addAnnouncement(announcement2)
+        addAnnouncement(announcement3)
     }
 }

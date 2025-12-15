@@ -110,7 +110,7 @@ struct HomeView: View {
                     }
                 }
             }
-            .navigationTitle(localization.localized("todays_menu"))
+            .navigationTitle("Ankara Bilim Üniversitesi")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

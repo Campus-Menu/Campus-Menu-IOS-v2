@@ -77,7 +77,7 @@ struct CalendarView: View {
                     }
                 }
             }
-            .navigationTitle(localization.localized("menu_calendar"))
+            .navigationTitle("Menü Takvimi")
             .navigationBarTitleDisplayMode(.large)
         }
     }

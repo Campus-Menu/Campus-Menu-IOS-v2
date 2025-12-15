@@ -66,7 +66,7 @@ struct ProfileView: View {
                     }
                 }
             }
-            .navigationTitle(localization.localized("my_profile"))
+            .navigationTitle("Profilim")
             .navigationBarTitleDisplayMode(.large)
             .sheet(isPresented: $showSettings) {
                 SettingsView()
