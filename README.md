@@ -239,7 +239,30 @@ CocoaPods, SPM veya harici kütüphane gerektirmez.
 - [ ] Push notification entegrasyonu
 - [ ] iPad layout optimizasyonu
 
-## 📄 Lisans
+## � Gizlilik ve Veri Güvenliği
+
+### Toplanan Veriler
+Uygulama aşağıdaki verileri **sadece cihazda** saklar:
+- **Kullanıcı Adı**: Profil görüntüleme için
+- **E-posta**: Hesap yönetimi için
+- **Öğrenci Numarası**: Kimlik doğrulama için
+- **Favori Yemekler**: Kişiselleştirme için
+- **Yorumlar ve Değerlendirmeler**: Topluluk etkileşimi için
+
+### Veri Depolama
+- ✅ Tüm veriler **yerel JSON dosyalarında** saklanır
+- ✅ **Hiçbir veri sunucuya gönderilmez**
+- ✅ **Üçüncü taraf takip yok**
+- ✅ **Reklam yok**
+- ✅ **Analytics yok**
+
+### Gizlilik Taahhüdü
+- Verileriniz sadece sizin cihazınızda kalır
+- Kişisel bilgileriniz paylaşılmaz
+- İzleme veya analitik yapılmaz
+- Reklam gösterilmez
+
+## �📄 Lisans
 
 Bu proje eğitim amaçlı geliştirilmiştir.
 
@@ -249,6 +272,6 @@ Created with ❤️ using SwiftUI
 
 ---
 
-**Son Güncelleme:** 06.12.2025  
+**Son Güncelleme:** 15.12.2025  
 **Versiyon:** 1.0.0  
 **iOS Target:** 17.0+
